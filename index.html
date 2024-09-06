@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +12,13 @@
             padding: 20px;
             background-color: #f0f0f0;
         }
+
         .container {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
         }
+
         .upload-box {
             width: 48%;
             height: 200px;
@@ -27,6 +30,7 @@
             align-items: center;
             background-color: #fff;
         }
+
         .upload-button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -36,6 +40,7 @@
             cursor: pointer;
             margin-bottom: 10px;
         }
+
         .file-name {
             font-size: 14px;
             color: #333;
@@ -43,6 +48,7 @@
             word-break: break-all;
             max-width: 90%;
         }
+
         #comparison-result {
             background-color: #fff;
             border: 1px solid #ddd;
@@ -51,45 +57,65 @@
             margin-top: 20px;
             overflow-x: auto;
         }
+
         .comparison-table {
             width: 100%;
             border-collapse: collapse;
         }
-        .comparison-table th, .comparison-table td {
+
+        .comparison-table th,
+        .comparison-table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         .comparison-table th {
             background-color: #f2f2f2;
         }
+    .comparison-table th:nth-child(1),
+    .comparison-table th:nth-child(2),
+    .comparison-table th:nth-child(3),
+    .comparison-table th:nth-child(4) {
+        width: 22%;
+    }
+    .comparison-table th:nth-child(5) {
+        width: 7%;
+    }
         .diff-added {
             background-color: #e6ffe6;
         }
+
         .diff-removed {
             background-color: #ffe6e6;
         }
+
         .diff-changed {
             background-color: #fff0b3;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="upload-box" id="upload-box-1">
             <input type="file" id="file-input-1" style="display: none;">
-            <button class="upload-button" onclick="document.getElementById('file-input-1').click()">Upload SBOM 1</button>
+            <button class="upload-button" onclick="document.getElementById('file-input-1').click()">Upload SBOM
+                1</button>
             <div class="file-name" id="file-name-1"></div>
         </div>
         <div class="upload-box" id="upload-box-2">
             <input type="file" id="file-input-2" style="display: none;">
-            <button class="upload-button" onclick="document.getElementById('file-input-2').click()">Upload SBOM 2</button>
+            <button class="upload-button" onclick="document.getElementById('file-input-2').click()">Upload SBOM
+                2</button>
             <div class="file-name" id="file-name-2"></div>
         </div>
     </div>
     <div id="comparison-result"></div>
 
     <script>
+        let fileName1 = null;
+        let fileName2 = null;
         let sbom1List = null;
         let sbom2List = null;
 
@@ -135,19 +161,23 @@
 
             const reader = new FileReader();
 
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 try {
                     const sbom = JSON.parse(e.target.result);
                     const componentList = extractAndSortComponents(sbom);
-                    
+
                     if (sbomNumber === 1) {
+                        fileName1=file.name;
                         sbom1List = componentList;
                     } else {
+                        fileName2=file.name;
                         sbom2List = componentList;
                     }
                     document.getElementById(`upload-box-${sbomNumber}`).style.backgroundColor = '#e6ffe6';
                     if (sbom1List && sbom2List) {
                         compareSBOMs();
+                        document.getElementById(`file-name-header-1`).innerHTML = fileName1.replace(".json", "");
+                        document.getElementById(`file-name-header-2`).innerHTML = fileName2.replace(".json", "");
                     }
                 } catch (error) {
                     console.error(`Error processing SBOM ${sbomNumber}:`, error);
@@ -155,12 +185,13 @@
                 }
             };
 
-            reader.onerror = function(error) {
+            reader.onerror = function (error) {
                 console.error(`Error reading file for SBOM ${sbomNumber}:`, error);
                 alert(`Error reading file for SBOM ${sbomNumber}. Please try again.`);
             };
 
             reader.readAsText(file);
+ 
         }
 
         function extractAndSortComponents(sbom) {
@@ -211,8 +242,8 @@
             let tableHtml = `
                 <table class="comparison-table">
                     <tr>
-                        <th colspan="2">SBOM 1</th>
-                        <th colspan="2">SBOM 2</th>
+                        <th colspan="2" id="file-name-header-1">SBOM 1</th>
+                        <th colspan="2" id="file-name-header-2">SBOM 2</th>
                         <th>Status</th>
                     </tr>
                     <tr>
@@ -254,4 +285,5 @@
         }
     </script>
 </body>
+
 </html>
