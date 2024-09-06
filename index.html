@@ -73,15 +73,18 @@
         .comparison-table th {
             background-color: #f2f2f2;
         }
-    .comparison-table th:nth-child(1),
-    .comparison-table th:nth-child(2),
-    .comparison-table th:nth-child(3),
-    .comparison-table th:nth-child(4) {
-        width: 22%;
-    }
-    .comparison-table th:nth-child(5) {
-        width: 7%;
-    }
+
+        .comparison-table th:nth-child(1),
+        .comparison-table th:nth-child(2),
+        .comparison-table th:nth-child(3),
+        .comparison-table th:nth-child(4) {
+            width: 22%;
+        }
+
+        .comparison-table th:nth-child(5) {
+            width: 7%;
+        }
+
         .diff-added {
             background-color: #e6ffe6;
         }
@@ -116,6 +119,8 @@
     <script>
         let fileName1 = null;
         let fileName2 = null;
+        let componentCount1 = null;
+        let componentCount2 = null;
         let sbom1List = null;
         let sbom2List = null;
 
@@ -167,17 +172,19 @@
                     const componentList = extractAndSortComponents(sbom);
 
                     if (sbomNumber === 1) {
-                        fileName1=file.name;
+                        fileName1 = file.name;
                         sbom1List = componentList;
+                        componentCount1=componentList.length
                     } else {
-                        fileName2=file.name;
+                        fileName2 = file.name;
                         sbom2List = componentList;
+                        componentCount2=componentList.length
                     }
                     document.getElementById(`upload-box-${sbomNumber}`).style.backgroundColor = '#e6ffe6';
                     if (sbom1List && sbom2List) {
                         compareSBOMs();
-                        document.getElementById(`file-name-header-1`).innerHTML = fileName1.replace(".json", "");
-                        document.getElementById(`file-name-header-2`).innerHTML = fileName2.replace(".json", "");
+                        document.getElementById(`file-name-header-1`).innerHTML = fileName1.replace(".json", "") +" ("+ componentCount1+")";
+                        document.getElementById(`file-name-header-2`).innerHTML = fileName2.replace(".json", "") + " (" + componentCount2 + ")";
                     }
                 } catch (error) {
                     console.error(`Error processing SBOM ${sbomNumber}:`, error);
@@ -191,7 +198,7 @@
             };
 
             reader.readAsText(file);
- 
+
         }
 
         function extractAndSortComponents(sbom) {
